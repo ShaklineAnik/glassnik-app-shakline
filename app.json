@@ -23,7 +23,8 @@
         "NSPhotoLibraryUsageDescription": "Glassnik needs access to your photo library to upload videos and thumbnails.",
         "NSPhotoLibraryAddUsageDescription": "Glassnik saves your recorded videos to your photo library.",
         "NSLocationWhenInUseUsageDescription": "Glassnik uses your location to show you nearby POV content and tag your videos.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Glassnik uses your location to show you nearby POV content and tag your videos."
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Glassnik uses your location to show you nearby POV content and tag your videos.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
