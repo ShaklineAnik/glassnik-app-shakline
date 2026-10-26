@@ -37,7 +37,7 @@ export interface SampleVideo {
 export const SAMPLE_VIDEOS: SampleVideo[] = [
   {
     id: 'sv-1',
-    uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+    uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
     creator: { name: 'Luna Chen', username: 'lunachen', initial: 'L', color: '#FF6B9D' },
     description: 'When life calls, you answer with adventure 🌊✨ Some moments are worth chasing forever',
     hashtags: ['adventure', 'explore', 'travel'],
@@ -48,7 +48,7 @@ export const SAMPLE_VIDEOS: SampleVideo[] = [
   },
   {
     id: 'sv-2',
-    uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
     creator: { name: 'Marcus Fire', username: 'marcusfire', initial: 'M', color: '#FF4500' },
     description: 'Feel the heat 🔥 This is what real passion looks like. No cap.',
     hashtags: ['fire', 'intense', 'viral'],
@@ -59,7 +59,7 @@ export const SAMPLE_VIDEOS: SampleVideo[] = [
   },
   {
     id: 'sv-3',
-    uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
     creator: { name: 'Pixel Dreams', username: 'pixeldreams', initial: 'P', color: '#7C3AED' },
     description: 'In a world full of chaos, be the bunny 🐰 POV: main character energy all day',
     hashtags: ['animation', 'cgi', 'vibes'],
@@ -70,7 +70,7 @@ export const SAMPLE_VIDEOS: SampleVideo[] = [
   },
   {
     id: 'sv-4',
-    uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
     creator: { name: 'Sci-Fi Sofia', username: 'scifisofia', initial: 'S', color: '#0EA5E9' },
     description: 'The future is closer than you think 🚀 Open source art is changing everything',
     hashtags: ['scifi', 'futuristic', 'art'],
@@ -81,7 +81,7 @@ export const SAMPLE_VIDEOS: SampleVideo[] = [
   },
   {
     id: 'sv-5',
-    uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+    uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
     creator: { name: 'Joy Unlimited', username: 'joyunlimited', initial: 'J', color: '#F59E0B' },
     description: 'Life is literally too short not to have fun every single day 🎉 Join me!',
     hashtags: ['fun', 'lifestyle', 'happy'],
@@ -92,7 +92,7 @@ export const SAMPLE_VIDEOS: SampleVideo[] = [
   },
   {
     id: 'sv-6',
-    uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+    uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
     creator: { name: 'Drift King', username: 'driftking', initial: 'D', color: '#EF4444' },
     description: 'Not all those who wander are lost — some are finding the best routes 🚗💨',
     hashtags: ['cars', 'drift', 'speed'],
@@ -103,7 +103,7 @@ export const SAMPLE_VIDEOS: SampleVideo[] = [
   },
   {
     id: 'sv-7',
-    uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
+    uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
     creator: { name: 'Adrenaline Alex', username: 'adrenalinealex', initial: 'A', color: '#10B981' },
     description: 'Running with bulls in Pamplona 🐂 Would you do it? Drop 🔥 or 💀 below',
     hashtags: ['extreme', 'bullrun', 'spain'],
@@ -114,7 +114,7 @@ export const SAMPLE_VIDEOS: SampleVideo[] = [
   },
   {
     id: 'sv-8',
-    uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
     creator: { name: 'Cinema Zero', username: 'cinemazero', initial: 'C', color: '#6366F1' },
     description: 'Open source film that changed everything 🎬 Art belongs to everyone, always',
     hashtags: ['film', 'cinematic', 'blender'],

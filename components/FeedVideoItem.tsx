@@ -3,6 +3,7 @@ import {
   Alert,
   Animated,
   Platform,
+  Share,
   Pressable,
   StyleSheet,
   Text,
@@ -14,7 +15,7 @@ const useNativeDriver = Platform.OS !== 'web';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import type { SampleVideo } from '@/constants/sampleVideos';
@@ -58,6 +59,14 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
   }, []));
 
   useEffect(() => {
+    console.log('VIDEO URI:', video.uri);
+    const sub = player.addListener('statusChange', (e: any) => {
+      console.log('VIDEO STATUS:', e.status, e.error?.message);
+    });
+    return () => sub.remove();
+  }, [player, video.uri]);
+
+  useEffect(() => {
     try {
       player.muted = isMuted;
       if (isActive && !paused) {
@@ -92,6 +101,17 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
   }
 
   function handleLike() {
+    if (!user) {
+      Alert.alert(
+        'Sign in required',
+        'You need to be signed in to like videos.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Sign In', onPress: () => router.push('/auth/login') },
+        ]
+      );
+      return;
+    }
     const wasLiked = liked;
     if (!wasLiked) {
       triggerHeartAnim();
@@ -112,13 +132,22 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
   function handleTap() {
     const now = Date.now();
     if (now - lastTap.current < 280) {
-      handleLike();
-      triggerHeartAnim();
+      if (!liked) handleLike();
+      else triggerHeartAnim();
     } else {
       setPaused((p) => !p);
       setControlsVisible((v) => !v);
     }
     lastTap.current = now;
+  }
+
+  async function handleShare() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    try {
+      await Share.share({
+        message: `Check out this video by @${video.creator.username} on Glassnik${video.description ? ': ' + video.description : ''}`,
+      });
+    } catch {}
   }
 
   function handleReport() {
@@ -186,15 +215,16 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
   const locationText = [video.place, video.city, video.country].filter(Boolean).join(', ') || null;
   const metaLine = [placeTourTransport, locationText].filter(Boolean).join(' • ');
 
-  return (
-    <View style={[styles.container, { width, height: ITEM_HEIGHT }]}>
-      {isActive ? (
-        <VideoView
-          player={player}
-          style={StyleSheet.absoluteFill}
-          contentFit="cover"
-          nativeControls={false}
-        />
+    return (
+      <View style={[styles.container, { width, height: ITEM_HEIGHT }]}>
+        {isActive ? (
+          <VideoView
+            player={player}
+            style={StyleSheet.absoluteFill}
+            contentFit="cover"
+            nativeControls={false}
+            surfaceType="textureView"
+          />
       ) : video.thumbnailUrl ? (
         <Image
           source={{ uri: video.thumbnailUrl }}
@@ -221,7 +251,7 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
       <Animated.View
         style={[styles.heartOverlay, { opacity: heartOpacity, transform: [{ scale: heartScale }], pointerEvents: 'none' }]}
       >
-        <Feather name="heart" size={90} color="#fff" />
+        <Ionicons name="heart" size={90} color="#FE2C55" />
       </Animated.View>
 
       {controlsVisible && (
@@ -271,9 +301,9 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
 
           <View style={styles.actionRow}>
             <Pressable style={styles.actionItem} onPress={handleLike}>
-              <Feather
-                name="heart"
-                size={18}
+              <Ionicons
+                name={liked ? 'heart' : 'heart-outline'}
+                size={20}
                 color={liked ? '#FE2C55' : 'rgba(255,255,255,0.7)'}
               />
               <Text style={styles.actionLabel}>{formatCount(likeCount)}</Text>
@@ -290,7 +320,7 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
               <Text style={styles.actionLabel}>{formatCount(video.comments)}</Text>
             </Pressable>
 
-            <Pressable style={styles.actionItem}>
+            <Pressable style={styles.actionItem} onPress={handleShare}>
               <Feather name="share-2" size={17} color="rgba(255,255,255,0.7)" />
               <Text style={styles.actionLabel}>{formatCount(video.shares)}</Text>
             </Pressable>

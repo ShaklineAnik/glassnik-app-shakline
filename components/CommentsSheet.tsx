@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
@@ -14,6 +15,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useAuth } from '@/context/AuthContext';
 import { videoApi } from '@/lib/api';
@@ -49,6 +51,7 @@ export function CommentsSheet({ videoId, onClose }: Props) {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [text, setText] = useState('');
   const inputRef = useRef<TextInput>(null);
 
@@ -75,7 +78,7 @@ export function CommentsSheet({ videoId, onClose }: Props) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     },
     onError: () => {
-      // Silently ignore — input remains for retry
+      Alert.alert('Could not post comment', 'Please try again.');
     },
   });
 
@@ -150,19 +153,32 @@ export function CommentsSheet({ videoId, onClose }: Props) {
             ) : (
               <View style={[styles.anonAvatar]} />
             )}
-            <TextInput
-              ref={inputRef}
-              style={styles.input}
-              placeholder={user ? 'Add a comment…' : 'Sign in to comment'}
-              placeholderTextColor="rgba(255,255,255,0.3)"
-              value={text}
-              onChangeText={setText}
-              editable={!!user}
-              returnKeyType="send"
-              onSubmitEditing={handleSend}
-              selectionColor="#FE2C55"
-              multiline={false}
-            />
+            {user ? (
+              <TextInput
+                ref={inputRef}
+                style={styles.input}
+                placeholder="Add a comment…"
+                placeholderTextColor="rgba(255,255,255,0.3)"
+                value={text}
+                onChangeText={setText}
+                returnKeyType="send"
+                onSubmitEditing={handleSend}
+                selectionColor="#FE2C55"
+                multiline={false}
+              />
+            ) : (
+              <Pressable
+                style={[styles.input, { justifyContent: 'center' }]}
+                onPress={() => {
+                  onClose();
+                  router.push('/auth/login');
+                }}
+              >
+                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>
+                  Sign in to comment
+                </Text>
+              </Pressable>
+            )}
             <Pressable
               onPress={handleSend}
               disabled={!text.trim() || postMutation.isPending || !user}
@@ -286,4 +302,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
