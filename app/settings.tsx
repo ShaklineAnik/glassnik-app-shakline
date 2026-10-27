@@ -206,7 +206,7 @@ export default function SettingsScreen() {
           </Pressable>
 
           <Pressable
-            onPress={() => Linking.openURL('https://glassnik.com/terms')}
+            onPress={() => Linking.openURL('https://www.glassnik.com/terms-of-service')}
             style={({ pressed }) => [styles.rowBtn, { opacity: pressed ? 0.7 : 1, paddingHorizontal: 0 }]}
           >
             <Feather name="file-text" size={16} color="rgba(255,255,255,0.7)" />
