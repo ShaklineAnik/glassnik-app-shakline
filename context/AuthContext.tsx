@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authApi, userApi } from '@/lib/api';
+import { getAccessToken, saveTokens, clearTokens } from '@/lib/tokenStore';
 import type { User } from '@/types';
 
 interface AuthContextValue {
@@ -24,9 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const [stored, storedToken] = await AsyncStorage.multiGet(['user', 'accessToken']);
-        if (stored[1]) setUser(JSON.parse(stored[1]));
-        if (storedToken[1]) setToken(storedToken[1]);
+                const stored = await AsyncStorage.getItem('user');
+                const storedToken = await getAccessToken();
+                if (stored && storedToken) {
+                  setUser(JSON.parse(stored));
+                  setToken(storedToken);
+                }
       } catch {
         // ignore
       } finally {
@@ -36,11 +40,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const persistAuth = useCallback(async (data: { user: User; accessToken: string; refreshToken: string }) => {
-    await AsyncStorage.multiSet([
-      ['user', JSON.stringify(data.user)],
-      ['accessToken', data.accessToken],
-      ['refreshToken', data.refreshToken],
-    ]);
+        await AsyncStorage.setItem('user', JSON.stringify(data.user));
+        await saveTokens(data.accessToken, data.refreshToken);
+        await AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
     setUser(data.user);
     setToken(data.accessToken);
   }, []);
@@ -58,6 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     await authApi.logout();
     await AsyncStorage.multiRemove(['user', 'accessToken', 'refreshToken']);
+        await clearTokens();
     setUser(null);
     setToken(null);
   }, []);

@@ -58,12 +58,13 @@
     "zod-validation-error": "^3.4.0"
   },
   "dependencies": {
+    "expo": "~54.0.36",
     "expo-file-system": "^19.0.23",
     "expo-notifications": "^0.32.17",
+    "expo-secure-store": "~15.0.8",
     "expo-video": "~3.0.16",
     "lightningcss": "^1.33.0",
     "lightningcss-win32-x64-msvc": "1.33.0",
-    "expo": "~54.0.36",
     "react": "19.1.0",
     "react-native": "0.81.5"
   }

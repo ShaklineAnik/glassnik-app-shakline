@@ -64,7 +64,8 @@
         {
           "locationWhenInUsePermission": "Glassnik uses your location to show you nearby POV content and tag your videos."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

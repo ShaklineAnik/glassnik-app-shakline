@@ -1,13 +1,12 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { getAccessToken, getRefreshToken, saveTokens } from './tokenStore';
 const BASE_URL = 'http://localhost:3000';
 
 async function getToken(): Promise<string | null> {
-  return AsyncStorage.getItem('accessToken');
+    return getAccessToken();
 }
 
 async function refreshAccessToken(): Promise<string | null> {
-  const refreshToken = await AsyncStorage.getItem('refreshToken');
+    const refreshToken = await getRefreshToken();
   if (!refreshToken) return null;
   try {
     const res = await fetch(`${BASE_URL}/auth/refresh`, {
@@ -18,9 +17,7 @@ async function refreshAccessToken(): Promise<string | null> {
     if (!res.ok) return null;
     const data = await res.json();
     if (data.accessToken) {
-      const items: [string, string][] = [['accessToken', data.accessToken]];
-      if (data.refreshToken) items.push(['refreshToken', data.refreshToken]);
-      await AsyncStorage.multiSet(items);
+            await saveTokens(data.accessToken, data.refreshToken ?? refreshToken);
       return data.accessToken;
     }
     return null;
@@ -76,7 +73,7 @@ export const authApi = {
     }),
 
   logout: async () => {
-    const refreshToken = await AsyncStorage.getItem('refreshToken');
+        const refreshToken = await getRefreshToken();
     if (!refreshToken) return;
     return request('/auth/logout', {
       method: 'POST',
