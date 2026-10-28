@@ -4,6 +4,7 @@ import {
   Alert,
   Image,
   KeyboardAvoidingView,
+    Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -29,6 +30,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+    const [agreed, setAgreed] = useState(false);
 
   async function handleRegister() {
     if (!email.trim() || !password) {
@@ -127,14 +129,43 @@ export default function RegisterScreen() {
                 />
               </Pressable>
             </View>
+                        <Pressable
+                          style={styles.termsRow}
+                          onPress={() => setAgreed(!agreed)}
+                          accessibilityRole="checkbox"
+                          accessibilityState={{ checked: agreed }}
+                        >
+                          <Feather
+                            name={agreed ? 'check-square' : 'square'}
+                            size={20}
+                            color={agreed ? colors.primary : colors.mutedForeground}
+                          />
+                          <Text style={[styles.termsText, { color: colors.mutedForeground }]}>
+                            I agree to the{' '}
+                            <Text
+                              style={{ color: colors.primary }}
+                              onPress={() => Linking.openURL('https://www.glassnik.com/terms-of-service')}
+                            >
+                              Terms of Service
+                            </Text>
+                            {' '}and{' '}
+                            <Text
+                              style={{ color: colors.primary }}
+                              onPress={() => Linking.openURL('https://www.glassnik.com/privacy-policy')}
+                            >
+                              Privacy Policy
+                            </Text>
+                            .
+                          </Text>
+                        </Pressable>
 
             <Pressable
               style={({ pressed }) => [
                 styles.btn,
-                { backgroundColor: colors.primary, opacity: pressed || loading ? 0.8 : 1 },
+                                { backgroundColor: colors.primary, opacity: !agreed ? 0.4 : pressed || loading ? 0.8 : 1 },
               ]}
               onPress={handleRegister}
-              disabled={loading}
+              disabled={loading || !agreed}
             >
               {loading ? (
                 <ActivityIndicator color="#fff" />
@@ -231,6 +262,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   btnText: { color: '#fff', fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+    termsRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+    termsText: { flex: 1, fontSize: 13, lineHeight: 19, fontFamily: 'Inter_400Regular' },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
