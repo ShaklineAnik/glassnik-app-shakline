@@ -39,3 +39,10 @@ yarn-error.*
 .vercel
 
 .env
+
+# Secrets and signing files
+*.keystore
+google-services.json
+GoogleService-Info.plist
+.env.*
+!.env.example
