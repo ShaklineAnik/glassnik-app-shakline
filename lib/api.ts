@@ -175,6 +175,11 @@ export const videoApi = {
     request<{ liked: boolean; likeCount: number }>(`/videos/${videoId}/like`, {
       method: 'DELETE',
     }),
+  reportVideo: (videoId: string | number, reason: string, details?: string) =>
+    request<{ success: boolean }>(`/videos/${videoId}/report`, {
+      method: 'POST',
+      body: JSON.stringify({ reason, details }),
+    }),
 };
 
 // ─── Notifications ────────────────────────────────────────────────────────────

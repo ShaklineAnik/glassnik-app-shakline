@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
+    Modal,
   Platform,
   Share,
   Pressable,
@@ -45,6 +46,8 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
   const [progress, setProgress] = useState(0);
   const [following, setFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+    const [reportOpen, setReportOpen] = useState(false);
+    const [reportSending, setReportSending] = useState(false);
   const lastTap = useRef(0);
   const { user } = useAuth();
   const isOwnVideo = user?.id != null && video.creatorId != null && video.creatorId === user.id;
@@ -151,21 +154,28 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
   }
 
   function handleReport() {
-    Alert.alert(
-      'Report video',
-      'Why are you reporting this video?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Submit report',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-            Alert.alert('Thanks', 'Your report has been noted.');
-          },
-        },
-      ],
-    );
+    setReportOpen(true);
+  }
+
+  async function submitReport(reason: string) {
+    if (reportSending) return;
+    const isRealVideo = video.creatorId != null && !video.id.startsWith('sv-');
+    if (!isRealVideo) {
+      setReportOpen(false);
+      Alert.alert('Sample video', 'This is a sample video, so there is nothing to report.');
+      return;
+    }
+    setReportSending(true);
+    try {
+      await videoApi.reportVideo(video.id, reason);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      setReportOpen(false);
+      Alert.alert('Thanks', 'Your report has been sent to our team.');
+    } catch (err: any) {
+      Alert.alert('Could not send report', err?.message ?? 'Please try again.');
+    } finally {
+      setReportSending(false);
+    }
   }
 
   async function handleFollow() {
@@ -332,9 +342,70 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
           </View>
         </View>
       )}
+        <Modal
+          visible={reportOpen}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setReportOpen(false)}
+        >
+          <View style={reportStyles.backdrop}>
+            <View style={reportStyles.sheet}>
+              <Text style={reportStyles.title}>Report video</Text>
+              <Text style={reportStyles.subtitle}>Why are you reporting this video?</Text>
+              {REPORT_REASONS.map((reason) => (
+                <Pressable
+                  key={reason}
+                  style={reportStyles.option}
+                  onPress={() => submitReport(reason)}
+                  disabled={reportSending}
+                >
+                  <Text style={reportStyles.optionText}>{reason}</Text>
+                </Pressable>
+              ))}
+              <Pressable style={reportStyles.cancel} onPress={() => setReportOpen(false)}>
+                <Text style={reportStyles.cancelText}>Cancel</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
     </View>
   );
 }
+
+const REPORT_REASONS = [
+  'Spam or misleading',
+  'Nudity or sexual content',
+  'Violence or dangerous acts',
+  'Hate or harassment',
+  'Something else',
+];
+
+const reportStyles = StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  sheet: {
+    backgroundColor: '#14141c',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    paddingBottom: 32,
+    gap: 8,
+  },
+  title: { color: '#fff', fontSize: 18, fontFamily: 'Inter_700Bold' },
+  subtitle: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 14,
+    fontFamily: 'Inter_400Regular',
+    marginBottom: 6,
+  },
+  option: {
+    paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(255,255,255,0.12)',
+  },
+  optionText: { color: '#fff', fontSize: 15, fontFamily: 'Inter_400Regular' },
+  cancel: { paddingVertical: 14, alignItems: 'center' },
+  cancelText: { color: 'rgba(255,255,255,0.7)', fontSize: 15, fontFamily: 'Inter_600SemiBold' },
+});
 
 const styles = StyleSheet.create({
   container: {
