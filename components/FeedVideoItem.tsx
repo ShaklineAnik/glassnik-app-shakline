@@ -198,7 +198,7 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
     setReportOpen(false);
     Alert.alert(
       `Block @${video.creator.username}?`,
-      'You will no longer see their videos. You can unblock them later.',
+      'You will no longer see their videos.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
