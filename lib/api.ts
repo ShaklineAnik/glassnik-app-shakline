@@ -1,5 +1,5 @@
 import { getAccessToken, getRefreshToken, saveTokens } from './tokenStore';
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 async function getToken(): Promise<string | null> {
     return getAccessToken();
