@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
-    Modal,
+  Modal,
   Platform,
   Share,
   Pressable,
@@ -46,11 +46,13 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
   const [progress, setProgress] = useState(0);
   const [following, setFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
-    const [reportOpen, setReportOpen] = useState(false);
-    const [reportSending, setReportSending] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportSending, setReportSending] = useState(false);
+  const [blockSending, setBlockSending] = useState(false);
   const lastTap = useRef(0);
   const { user } = useAuth();
   const isOwnVideo = user?.id != null && video.creatorId != null && video.creatorId === user.id;
+  const canBlock = video.creatorId != null && !video.id.startsWith('sv-') && !isOwnVideo;
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -176,6 +178,47 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
     } finally {
       setReportSending(false);
     }
+  }
+
+  function handleBlock() {
+    if (!user) {
+      setReportOpen(false);
+      Alert.alert(
+        'Sign in required',
+        'You need to be signed in to block a user.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Sign In', onPress: () => router.push('/auth/login') },
+        ],
+      );
+      return;
+    }
+    if (!canBlock || video.creatorId == null || blockSending) return;
+    const creatorId = video.creatorId;
+    setReportOpen(false);
+    Alert.alert(
+      `Block @${video.creator.username}?`,
+      'You will no longer see their videos. You can unblock them later.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Block',
+          style: 'destructive',
+          onPress: async () => {
+            setBlockSending(true);
+            try {
+              await userApi.blockUser(creatorId);
+              queryClient.invalidateQueries({ queryKey: ['feed'] }).catch(() => {});
+              Alert.alert('User blocked', 'You will no longer see their videos.');
+            } catch (err: any) {
+              Alert.alert('Could not block user', err?.message ?? 'Please try again.');
+            } finally {
+              setBlockSending(false);
+            }
+          },
+        },
+      ],
+    );
   }
 
   async function handleFollow() {
@@ -342,32 +385,40 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
           </View>
         </View>
       )}
-        <Modal
-          visible={reportOpen}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setReportOpen(false)}
-        >
-          <View style={reportStyles.backdrop}>
-            <View style={reportStyles.sheet}>
-              <Text style={reportStyles.title}>Report video</Text>
-              <Text style={reportStyles.subtitle}>Why are you reporting this video?</Text>
-              {REPORT_REASONS.map((reason) => (
-                <Pressable
-                  key={reason}
-                  style={reportStyles.option}
-                  onPress={() => submitReport(reason)}
-                  disabled={reportSending}
-                >
-                  <Text style={reportStyles.optionText}>{reason}</Text>
-                </Pressable>
-              ))}
-              <Pressable style={reportStyles.cancel} onPress={() => setReportOpen(false)}>
-                <Text style={reportStyles.cancelText}>Cancel</Text>
+
+      <Modal
+        visible={reportOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setReportOpen(false)}
+      >
+        <View style={reportStyles.backdrop}>
+          <View style={reportStyles.sheet}>
+            <Text style={reportStyles.title}>Report video</Text>
+            <Text style={reportStyles.subtitle}>Why are you reporting this video?</Text>
+            {REPORT_REASONS.map((reason) => (
+              <Pressable
+                key={reason}
+                style={reportStyles.option}
+                onPress={() => submitReport(reason)}
+                disabled={reportSending}
+              >
+                <Text style={reportStyles.optionText}>{reason}</Text>
               </Pressable>
-            </View>
+            ))}
+            {canBlock && (
+              <Pressable style={reportStyles.option} onPress={handleBlock} disabled={blockSending}>
+                <Text style={[reportStyles.optionText, { color: '#ef4444' }]}>
+                  Block @{video.creator.username}
+                </Text>
+              </Pressable>
+            )}
+            <Pressable style={reportStyles.cancel} onPress={() => setReportOpen(false)}>
+              <Text style={reportStyles.cancelText}>Cancel</Text>
+            </Pressable>
           </View>
-        </Modal>
+        </View>
+      </Modal>
     </View>
   );
 }

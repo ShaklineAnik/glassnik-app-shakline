@@ -142,6 +142,15 @@ export const userApi = {
     request<{ following: boolean; followerCount: number }>(`/users/${userId}/follow`, {
       method: 'DELETE',
     }),
+  blockUser: (userId: number) =>
+    request<{ success: boolean }>(`/users/${userId}/block`, {
+      method: 'POST',
+    }),
+
+  unblockUser: (userId: number) =>
+    request<{ success: boolean }>(`/users/${userId}/block`, {
+      method: 'DELETE',
+    }),
 };
 
 // ─── Videos ───────────────────────────────────────────────────────────────────
