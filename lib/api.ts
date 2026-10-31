@@ -142,6 +142,10 @@ export const userApi = {
     request<{ following: boolean; followerCount: number }>(`/users/${userId}/follow`, {
       method: 'DELETE',
     }),
+  deleteMyAccount: () =>
+    request<{ success: boolean }>('/users/me', {
+      method: 'DELETE',
+    }),
 };
 
 // ─── Videos ───────────────────────────────────────────────────────────────────
