@@ -142,6 +142,7 @@ export const userApi = {
     request<{ following: boolean; followerCount: number }>(`/users/${userId}/follow`, {
       method: 'DELETE',
     }),
+
   blockUser: (userId: number) =>
     request<{ success: boolean }>(`/users/${userId}/block`, {
       method: 'POST',
@@ -149,6 +150,11 @@ export const userApi = {
 
   unblockUser: (userId: number) =>
     request<{ success: boolean }>(`/users/${userId}/block`, {
+      method: 'DELETE',
+    }),
+
+  deleteMyAccount: () =>
+    request<{ success: boolean }>('/users/me', {
       method: 'DELETE',
     }),
 };

@@ -18,6 +18,7 @@ import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { useAuth } from '@/context/AuthContext';
 import { useMute } from '@/context/MuteContext';
+import { userApi } from '@/lib/api';
 
 // Local preference keys. Autoplay and push-notification toggles persist here
 // but aren't yet consumed by real feed-playback or push-registration logic —
@@ -36,6 +37,7 @@ export default function SettingsScreen() {
   const { isMuted, toggleMute } = useMute();
 
   const [loggingOut, setLoggingOut] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [autoplay, setAutoplay] = useState(true);
   const [pushNotifs, setPushNotifs] = useState(true);
 
@@ -66,6 +68,7 @@ export default function SettingsScreen() {
   }
 
   function handleDeleteAccount() {
+    if (deleting) return;
     Alert.alert(
       'Delete account',
       'This will permanently delete your account, including your Experiences, likes, comments, and followers. This cannot be undone.',
@@ -74,8 +77,24 @@ export default function SettingsScreen() {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => {
-            Alert.alert('Not yet available', 'Account deletion isn\'t supported yet. Contact the team if you need your account removed.');
+          onPress: async () => {
+            setDeleting(true);
+            try {
+              await userApi.deleteMyAccount();
+            } catch (err: any) {
+              setDeleting(false);
+              Alert.alert(
+                'Could not delete account',
+                err?.message ?? 'Please try again, or contact the team.',
+              );
+              return;
+            }
+            try {
+              await logout();
+            } catch {}
+            setDeleting(false);
+            Alert.alert('Account deleted', 'Your account and data have been deleted.');
+            router.replace('/' as any);
           },
         },
       ],
@@ -180,7 +199,8 @@ export default function SettingsScreen() {
 
           <Pressable
             onPress={handleDeleteAccount}
-            style={({ pressed }) => [styles.rowBtn, { opacity: pressed ? 0.7 : 1 }]}
+            disabled={deleting}
+            style={({ pressed }) => [styles.rowBtn, { opacity: pressed || deleting ? 0.7 : 1 }]}
           >
             <Feather name="trash-2" size={16} color="#ef4444" />
             <Text style={[styles.rowBtnText, { color: '#ef4444' }]}>Delete Account</Text>
