@@ -142,6 +142,15 @@ export const userApi = {
     request<{ following: boolean; followerCount: number }>(`/users/${userId}/follow`, {
       method: 'DELETE',
     }),
+  blockUser: (userId: number) =>
+    request<{ success: boolean }>(`/users/${userId}/block`, {
+      method: 'POST',
+    }),
+
+  unblockUser: (userId: number) =>
+    request<{ success: boolean }>(`/users/${userId}/block`, {
+      method: 'DELETE',
+    }),
 };
 
 // ─── Videos ───────────────────────────────────────────────────────────────────
@@ -174,6 +183,11 @@ export const videoApi = {
   unlikeVideo: (videoId: string | number) =>
     request<{ liked: boolean; likeCount: number }>(`/videos/${videoId}/like`, {
       method: 'DELETE',
+    }),
+  reportVideo: (videoId: string | number, reason: string, details?: string) =>
+    request<{ success: boolean }>(`/videos/${videoId}/report`, {
+      method: 'POST',
+      body: JSON.stringify({ reason, details }),
     }),
 };
 
