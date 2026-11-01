@@ -217,7 +217,7 @@ export default function SettingsScreen() {
           <Text style={styles.sectionLabel}>APP</Text>
 
           <Pressable
-            onPress={() => Linking.openURL('https://glassnik.com/privacy')}
+                        onPress={() => Linking.openURL('https://www.glassnik.com/privacy-policy')}
             style={({ pressed }) => [styles.rowBtn, { opacity: pressed ? 0.7 : 1, paddingHorizontal: 0 }]}
           >
             <Feather name="shield" size={16} color="rgba(255,255,255,0.7)" />
