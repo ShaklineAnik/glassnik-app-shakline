@@ -34,7 +34,7 @@ export interface SampleVideo {
   createdAt?: string;
 }
 
-export const SAMPLE_VIDEOS: SampleVideo[] = [
+const DEMO_VIDEOS: SampleVideo[] = [
   {
     id: 'sv-1',
     uri: 'https://www.w3schools.com/html/mov_bbb.mp4',
@@ -124,3 +124,10 @@ export const SAMPLE_VIDEOS: SampleVideo[] = [
     shares: 112840,
   },
 ];
+
+/**
+ * Demo clips are shown only in development builds (__DEV__).
+ * In release builds this is empty, so the app shows real Glassnik
+ * Experiences from the API instead of placeholder videos.
+ */
+export const SAMPLE_VIDEOS: SampleVideo[] = __DEV__ ? DEMO_VIDEOS : [];
