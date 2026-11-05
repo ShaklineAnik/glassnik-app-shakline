@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Platform,
   Pressable,
@@ -86,7 +87,13 @@ export default function FeedScreen() {
     AsyncStorage.setItem(FIRST_TIME_INTRO_KEY, 'true').catch(() => {});
   }
 
-  const { data: apiVideos } = useQuery<VideoAsset[]>({
+  const {
+    data: apiVideos,
+    isLoading: feedLoading,
+    isError: feedError,
+    refetch: refetchFeed,
+    isRefetching: feedRefetching,
+  } = useQuery<VideoAsset[]>({
     queryKey: ['feed'],
     queryFn: () => mobileApi.getFeed(1, 20),
     retry: false,
@@ -127,6 +134,44 @@ export default function FeedScreen() {
 
   const topInset = Platform.OS === 'web' ? 0 : insets.top;
 
+  // Shown when the list is empty (e.g. a release build with no Experiences
+  // yet) so the feed is never a blank black screen.
+  const emptyState = (
+    <View style={[styles.emptyWrap, { height }]}>
+      {feedLoading ? (
+        <ActivityIndicator size="large" color="#fff" />
+      ) : feedError ? (
+        <>
+          <Feather name="wifi-off" size={36} color="rgba(255,255,255,0.7)" />
+          <Text style={styles.emptyTitle}>Couldn't load Experiences</Text>
+          <Text style={styles.emptySub}>Check your connection and try again.</Text>
+          <Pressable
+            onPress={() => refetchFeed()}
+            disabled={feedRefetching}
+            style={({ pressed }) => [styles.emptyBtn, { opacity: pressed || feedRefetching ? 0.7 : 1 }]}
+            accessibilityLabel="Try again"
+          >
+            <Text style={styles.emptyBtnText}>{feedRefetching ? 'Loading…' : 'Try again'}</Text>
+          </Pressable>
+        </>
+      ) : (
+        <>
+          <Feather name="video" size={36} color="rgba(255,255,255,0.7)" />
+          <Text style={styles.emptyTitle}>No Experiences yet</Text>
+          <Text style={styles.emptySub}>New Eye-POV Experiences will appear here. Check back soon.</Text>
+          <Pressable
+            onPress={() => refetchFeed()}
+            disabled={feedRefetching}
+            style={({ pressed }) => [styles.emptyBtn, { opacity: pressed || feedRefetching ? 0.7 : 1 }]}
+            accessibilityLabel="Refresh"
+          >
+            <Text style={styles.emptyBtnText}>{feedRefetching ? 'Loading…' : 'Refresh'}</Text>
+          </Pressable>
+        </>
+      )}
+    </View>
+  );
+
   return (
     <View style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
@@ -137,6 +182,7 @@ export default function FeedScreen() {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         getItemLayout={getItemLayout}
+        ListEmptyComponent={emptyState}
         snapToInterval={height}
         snapToAlignment="start"
         decelerationRate="fast"
@@ -265,6 +311,42 @@ const styles = StyleSheet.create({
     marginTop: 3,
     alignSelf: 'center',
     width: '80%',
+  },
+  emptyWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    gap: 12,
+  },
+  emptyTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'Inter_700Bold',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  emptySub: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 14,
+    fontFamily: 'Inter_400Regular',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  emptyBtn: {
+    marginTop: 8,
+    paddingHorizontal: 22,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
+  },
+  emptyBtnText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'Inter_600SemiBold',
   },
   topRight: {
     flex: 1,
