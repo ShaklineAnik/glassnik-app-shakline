@@ -11,7 +11,7 @@ import { Feather } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Tabs } from 'expo-router';
-import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
@@ -91,24 +91,24 @@ function NativeTabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: 'house', selected: 'house.fill' }} />
-        <Label>For You</Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} />
+        <NativeTabs.Trigger.Label>For You</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="explore">
-        <Icon sf={{ default: 'magnifyingglass', selected: 'magnifyingglass.circle.fill' }} />
-        <Label>Explore</Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'magnifyingglass', selected: 'magnifyingglass.circle.fill' }} />
+        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="upload">
-        <Icon sf={{ default: 'plus.circle', selected: 'plus.circle.fill' }} />
-        <Label>Upload</Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'plus.circle', selected: 'plus.circle.fill' }} />
+        <NativeTabs.Trigger.Label>Upload</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="notifications">
-        <Icon sf={{ default: 'bell', selected: 'bell.fill' }} />
-        <Label>Activity</Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'bell', selected: 'bell.fill' }} />
+        <NativeTabs.Trigger.Label>Activity</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
-        <Icon sf={{ default: 'person', selected: 'person.fill' }} />
-        <Label>Profile</Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'person', selected: 'person.fill' }} />
+        <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
