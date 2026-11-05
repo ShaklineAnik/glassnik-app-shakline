@@ -114,10 +114,10 @@ export default function SettingsScreen() {
             setLoggingOut(true);
             try {
               await logout();
-              // Auth context will clear user; root layout redirects to login
-            } catch {
-              setLoggingOut(false);
-            }
+            } catch {}
+            setLoggingOut(false);
+            // Return to the feed after signing out (same as Delete Account).
+            router.replace('/' as any);
           },
         },
       ],
@@ -217,7 +217,7 @@ export default function SettingsScreen() {
           <Text style={styles.sectionLabel}>APP</Text>
 
           <Pressable
-                        onPress={() => Linking.openURL('https://www.glassnik.com/privacy-policy')}
+            onPress={() => Linking.openURL('https://www.glassnik.com/privacy-policy')}
             style={({ pressed }) => [styles.rowBtn, { opacity: pressed ? 0.7 : 1, paddingHorizontal: 0 }]}
           >
             <Feather name="shield" size={16} color="rgba(255,255,255,0.7)" />

@@ -58,11 +58,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [persistAuth]);
 
   const logout = useCallback(async () => {
-    await authApi.logout();
-    await AsyncStorage.multiRemove(['user', 'accessToken', 'refreshToken']);
-        await clearTokens();
+    // Start telling the server (it needs the refresh token, which is read
+    // synchronously at the start of this call) but do NOT wait for it, so
+    // signing out can never hang on the network.
+    const serverLogout = authApi.logout().catch(() => {});
+    // Clear the local session straight away.
     setUser(null);
     setToken(null);
+    try {
+      await AsyncStorage.multiRemove(['user', 'accessToken', 'refreshToken']);
+    } catch {}
+    // Give the server request a short head start to read the refresh token,
+    // then remove the stored tokens. Never wait longer than 1.5 s.
+    await Promise.race([serverLogout, new Promise((resolve) => setTimeout(resolve, 1500))]);
+    try {
+      await clearTokens();
+    } catch {}
   }, []);
 
   const updateUser = useCallback(async (data: { displayName?: string; username?: string; avatarUrl?: string }) => {

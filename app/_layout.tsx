@@ -36,13 +36,13 @@ function AuthGate() {
   useEffect(() => {
     if (isLoading) return;
     const inAuthGroup = segments[0] === 'auth';
-    // TEMP: bypassed for local UI preview only — no backend to authenticate against.
-    // Restore this before sending any changes back to Tenzin/Pratik.
-    // if (!user && !inAuthGroup) {
-    //   router.replace('/auth/login');
-    // } else if (user && inAuthGroup) {
-    //   router.replace('/(tabs)');
-    // }
+    // After a successful login or sign-up, leave the auth screens and go to the feed.
+    // NOTE: forcing logged-out users to the login screen (the original
+    // `if (!user && !inAuthGroup) router.replace('/auth/login')`) is still
+    // switched off. Whether the feed needs sign-in is a product decision for Steve.
+    if (user && inAuthGroup) {
+      router.replace('/(tabs)');
+    }
   }, [user, isLoading, segments]);
 
   return (
