@@ -42,7 +42,7 @@ export default function ProfileScreen() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { user, logout, updateUser } = useAuth();
+  const { user, isLoading: authLoading, logout, updateUser } = useAuth();
   const queryClient = useQueryClient();
   const [gridTab, setGridTab] = useState<GridTab>('videos');
 
@@ -56,6 +56,15 @@ export default function ProfileScreen() {
     setEditDisplayName(user?.displayName ?? '');
     setEditUsername(user?.username ?? '');
   }, [user]);
+
+  // Not signed in → go to the sign-in screen instead of showing an empty profile.
+  useFocusEffect(
+    useCallback(() => {
+      if (!authLoading && !user) {
+        router.replace('/auth/login' as any);
+      }
+    }, [authLoading, user, router]),
+  );
 
   function handleStartEdit() {
     setEditDisplayName(user?.displayName ?? '');

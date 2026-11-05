@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { FeedVideoItem } from '@/components/FeedVideoItem';
 import { CommentsSheet } from '@/components/CommentsSheet';
 import { FirstTimeViewerPopup } from '@/components/FirstTimeViewerPopup';
@@ -61,6 +62,7 @@ export default function FeedScreen() {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<ActiveTab>('foryou');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
@@ -176,9 +178,23 @@ export default function FeedScreen() {
           </Pressable>
         </View>
 
-        {/* Right icons */}
+        {/* Right icons: Explore, Profile (→ Settings → Delete Account), Mute */}
         <View style={styles.topRight}>
-          <Pressable onPress={toggleMute} hitSlop={8}>
+          <Pressable
+            onPress={() => router.push('/(tabs)/explore' as any)}
+            hitSlop={8}
+            accessibilityLabel="Explore"
+          >
+            <Feather name="compass" size={22} color="#fff" />
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/(tabs)/profile' as any)}
+            hitSlop={8}
+            accessibilityLabel="Profile"
+          >
+            <Feather name="user" size={22} color="#fff" />
+          </Pressable>
+          <Pressable onPress={toggleMute} hitSlop={8} accessibilityLabel="Mute">
             <Feather name={isMuted ? 'volume-x' : 'volume-2'} size={22} color="#fff" />
           </Pressable>
         </View>
@@ -255,6 +271,9 @@ const styles = StyleSheet.create({
   },
   topRight: {
     flex: 1,
-    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    gap: 14,
   },
 });
