@@ -120,13 +120,16 @@ async function handle(req, res) {
     return send(res, 200, { success: true });
   }
 
+  // Feed - PUBLIC (works signed-out too, so the app can show Experiences
+  // before login). Set EMPTY_FEED=1 to return an empty list for testing the
+  // app's "No Experiences yet" screen.
+  if (m === 'GET' && path === '/mobile/feed') {
+    if (process.env.EMPTY_FEED) return send(res, 200, []);
+    return send(res, 200, videos.filter((v) => v.status === 'PUBLISHED' && !(me && isBlocked(me.id, v.ownerId))).map(videoOut));
+  }
+
   // Everything below needs a logged-in user
   if (!me) return fail(res, 401, 'Unauthorized');
-
-  // Feed
-  if (m === 'GET' && path === '/mobile/feed') {
-    return send(res, 200, videos.filter((v) => v.status === 'PUBLISHED' && !isBlocked(me.id, v.ownerId)).map(videoOut));
-  }
 
   // Upload (fake: no real file is stored)
   if (m === 'POST' && path === '/videos/request-upload') {
