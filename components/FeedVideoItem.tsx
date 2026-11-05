@@ -23,6 +23,7 @@ import type { SampleVideo } from '@/constants/sampleVideos';
 import { userApi, videoApi } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { useMute } from '@/context/MuteContext';
+import { reportPaused } from '@/lib/music/pauseStore';
 
 interface Props {
   video: SampleVideo;
@@ -58,6 +59,14 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
 
   const heartScale = useRef(new Animated.Value(0)).current;
   const heartOpacity = useRef(new Animated.Value(0)).current;
+
+  // Tell the (dev-only) background music when the viewer pauses this video.
+  useEffect(() => {
+    reportPaused(video.id, paused);
+  }, [video.id, paused]);
+  useEffect(() => {
+    return () => reportPaused(video.id, false);
+  }, [video.id]);
 
   const player = useVideoPlayer(video.uri, useCallback((p: import('expo-video').VideoPlayer) => {
     p.loop = true;

@@ -17,6 +17,7 @@ import { Feather } from '@expo/vector-icons';
 import { FeedVideoItem } from '@/components/FeedVideoItem';
 import { CommentsSheet } from '@/components/CommentsSheet';
 import { FirstTimeViewerPopup } from '@/components/FirstTimeViewerPopup';
+import { MusicController } from '@/components/MusicController';
 import { SAMPLE_VIDEOS, type SampleVideo } from '@/constants/sampleVideos';
 import { mobileApi } from '@/lib/api';
 import { useMute } from '@/context/MuteContext';
@@ -182,6 +183,8 @@ export default function FeedScreen() {
           </Pressable>
         </View>
       </View>
+
+      <MusicController video={allVideos[currentIndex] ?? null} />
 
       {/* ── First-time-viewer explainer popup ── */}
       {showIntro && <FirstTimeViewerPopup onDismiss={dismissIntro} />}
