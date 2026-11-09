@@ -66,7 +66,7 @@ Not done yet: Place/Location-based selection (selection is by Category only), li
 
 ## Tested so far
 
-Android emulator, a physical Android phone and a physical iPhone, all through Expo Go and against the mock server. The real Glassnik backend has not been tested.
+Android emulator: all flows (Report, Block, Delete Account, empty and error feed states) against the mock server. Physical Android phone and physical iPhone: the music branch (`feature/music-integration`) through Expo Go, against the mock server. The real Glassnik backend has not been tested.
 
 ## Backend dependencies
 
