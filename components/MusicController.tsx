@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
-import { contextKeyFor, loadCatalogue, pickTrack, type MusicTrack } from '@/lib/music/musicEngine';
+import { engineKeyFor, pickFor } from '@/lib/music/engineAdapter';
 import { useVideoPaused } from '@/lib/music/pauseStore';
 
 const STORAGE_KEY = '@glassnik/devMusicOn';
@@ -12,7 +12,7 @@ const VOLUME = 0.4;
 
 interface Props {
   /** The video currently active in the feed (id for pause state, category for track choice). */
-  video: { id?: string; category?: string | null } | null;
+  video: { id?: string; category?: string | null; city?: string | null; place?: string | null } | null;
 }
 
 /**
@@ -31,7 +31,8 @@ function DevMusic({ video }: Props) {
 
   const playerRef = useRef<any>(null);
   const subRef = useRef<any>(null);
-  const tracksRef = useRef<MusicTrack[] | null>(null);
+  const videoRef = useRef(video);
+  videoRef.current = video;
   const historyRef = useRef<string[]>([]);
   const wantedKeyRef = useRef<string | null>(null);
   const playingKeyRef = useRef<string | null>(null);
@@ -39,7 +40,7 @@ function DevMusic({ video }: Props) {
   const pausedRef = useRef(false);
   const playForRef = useRef<(key: string) => void>(() => {});
 
-  const key = video ? contextKeyFor(video.category) : null;
+  const key = video ? engineKeyFor(video) : null;
   const videoPaused = useVideoPaused(video?.id);
 
   useEffect(() => {
@@ -50,9 +51,11 @@ function DevMusic({ video }: Props) {
 
   const playFor = useCallback(async (ctxKey: string) => {
     try {
-      if (!tracksRef.current) tracksRef.current = await loadCatalogue();
-      const track = pickTrack(tracksRef.current, ctxKey, historyRef.current);
-      if (!track) return;
+      const v = videoRef.current;
+      if (!v) return;
+      const pick = await pickFor(v, historyRef.current);
+      if (!pick) return;
+      const track = { id: pick.trackId, uri: pick.uri };
       historyRef.current = [...historyRef.current, track.id].slice(-15);
       playingKeyRef.current = ctxKey;
 
