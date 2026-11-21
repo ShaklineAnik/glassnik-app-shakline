@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { FeedVideoItem } from '@/components/FeedVideoItem';
 import { CommentsSheet } from '@/components/CommentsSheet';
 import { FirstTimeViewerPopup } from '@/components/FirstTimeViewerPopup';
@@ -68,6 +68,15 @@ export default function FeedScreen() {
   const [commentsVideoId, setCommentsVideoId] = useState<string | null>(null);
   const { isMuted, toggleMute } = useMute();
 
+  // Pause the active video while the viewer is on another screen (Explore, Profile, ...).
+  const [feedFocused, setFeedFocused] = useState(true);
+  useFocusEffect(
+    useCallback(() => {
+      setFeedFocused(true);
+      return () => setFeedFocused(false);
+    }, [])
+  );
+
   // First-time-viewer explainer — shown once, ever, per device. Explains
   // that Place/Destination/Category under each video are tap targets, not
   // just labels. Checked on mount; dismissing (X or "Got it!") persists
@@ -114,11 +123,11 @@ export default function FeedScreen() {
     ({ item, index }: { item: SampleVideo; index: number }) => (
       <FeedVideoItem
         video={item}
-        isActive={index === currentIndex}
+        isActive={feedFocused && index === currentIndex}
         onCommentPress={(videoId) => setCommentsVideoId(videoId)}
       />
     ),
-    [currentIndex]
+    [currentIndex, feedFocused]
   );
 
   const getItemLayout = useCallback(

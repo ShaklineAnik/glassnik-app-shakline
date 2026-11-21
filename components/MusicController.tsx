@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
+import { useFocusEffect } from 'expo-router';
 import { engineKeyFor, pickFor } from '@/lib/music/engineAdapter';
 import { useVideoPaused } from '@/lib/music/pauseStore';
 
@@ -18,7 +19,8 @@ interface Props {
 /**
  * DEV-ONLY background music for the feed. Renders nothing in release builds.
  * Music starts only after the viewer turns it on (button), never automatically.
- * Independent of the speaker button; pauses when the viewer pauses the video.
+ * Independent of the speaker button; pauses when the viewer pauses the video,
+ * and when the viewer leaves the feed (Explore, Profile, another screen).
  */
 export function MusicController({ video }: Props) {
   if (!__DEV__) return null;
@@ -28,6 +30,15 @@ export function MusicController({ video }: Props) {
 function DevMusic({ video }: Props) {
   const insets = useSafeAreaInsets();
   const [enabled, setEnabled] = useState(false);
+  // True only while the feed screen is the one on screen.
+  const [feedFocused, setFeedFocused] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      setFeedFocused(true);
+      return () => setFeedFocused(false);
+    }, [])
+  );
 
   const playerRef = useRef<any>(null);
   const subRef = useRef<any>(null);
@@ -89,9 +100,10 @@ function DevMusic({ video }: Props) {
 
   useEffect(() => {
     enabledRef.current = enabled;
-    pausedRef.current = videoPaused;
+    // Leaving the feed counts as paused, so a track that ends meanwhile does not start the next one.
+    pausedRef.current = videoPaused || !feedFocused;
     wantedKeyRef.current = key;
-    if (!enabled || !key || videoPaused) {
+    if (!enabled || !key || videoPaused || !feedFocused) {
       try { playerRef.current?.pause(); } catch {}
       return;
     }
@@ -100,7 +112,7 @@ function DevMusic({ video }: Props) {
       return;
     }
     playFor(key);
-  }, [enabled, key, videoPaused, playFor]);
+  }, [enabled, key, videoPaused, feedFocused, playFor]);
 
   useEffect(() => {
     return () => {
