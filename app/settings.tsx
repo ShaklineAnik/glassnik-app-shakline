@@ -183,6 +183,15 @@ export default function SettingsScreen() {
           </Pressable>
 
           <Pressable
+            onPress={() => router.push('/blocked-users' as any)}
+            style={({ pressed }) => [styles.rowBtn, { opacity: pressed ? 0.7 : 1 }]}
+          >
+            <Feather name="slash" size={16} color="rgba(255,255,255,0.7)" />
+            <Text style={styles.rowBtnText}>Blocked users</Text>
+            <Feather name="chevron-right" size={16} color="rgba(255,255,255,0.3)" />
+          </Pressable>
+
+          <Pressable
             onPress={handleLogout}
             disabled={loggingOut}
             style={({ pressed }) => [styles.logoutBtn, { opacity: pressed || loggingOut ? 0.7 : 1 }]}

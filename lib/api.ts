@@ -119,6 +119,13 @@ export const mobileApi = {
 };
 
 // ─── User / capabilities / profile ────────────────────────────────────────────
+export interface BlockedUser {
+  id: number;
+  username?: string | null;
+  displayName?: string | null;
+  avatarUrl?: string | null;
+}
+
 export const userApi = {
   getMyCapabilities: () => request<any[]>('/me/capabilities'),
 
@@ -152,6 +159,10 @@ export const userApi = {
     request<{ success: boolean }>(`/users/${userId}/block`, {
       method: 'DELETE',
     }),
+
+  /** Users the signed-in user has blocked (for the Blocked users screen). */
+  getBlockedUsers: () =>
+    request<BlockedUser[]>('/users/me/blocks'),
 
   deleteMyAccount: () =>
     request<{ success: boolean }>('/users/me', {
