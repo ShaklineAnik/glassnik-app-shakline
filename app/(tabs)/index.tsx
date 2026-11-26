@@ -29,6 +29,22 @@ type ActiveTab = 'foryou' | 'following';
 
 const FIRST_TIME_INTRO_KEY = 'glassnik:seenForYouIntro';
 
+// The real backend sends `locationName` ("City, Country"), an optional `place` object
+// and a `categories` list. The mock server sends flat place/city/country/category strings.
+function backendMeta(v: VideoAsset) {
+  const raw = v as any;
+  const placeObj = raw.place && typeof raw.place === 'object' ? raw.place : null;
+  const parts: string[] = typeof raw.locationName === 'string'
+    ? raw.locationName.split(',').map((s: string) => s.trim()).filter(Boolean)
+    : [];
+  return {
+    place: placeObj?.name ?? (typeof v.place === 'string' ? v.place : null),
+    city: placeObj?.city ?? v.city ?? parts[0] ?? null,
+    country: placeObj?.country ?? v.country ?? (parts.length > 1 ? parts[parts.length - 1] : null),
+    category: v.category ?? raw.categories?.[0]?.name ?? null,
+  };
+}
+
 function apiVideoToSample(v: VideoAsset): SampleVideo {
   const colors = ['#FF6B9D', '#FF4500', '#7C3AED', '#0EA5E9', '#F59E0B', '#10B981', '#EF4444', '#6366F1'];
   const name = v.owner?.displayName ?? 'Unknown';
@@ -51,10 +67,7 @@ function apiVideoToSample(v: VideoAsset): SampleVideo {
     likes: v.likes ?? 0,
     comments: 0,
     shares: 0,
-    place: v.place ?? null,
-    city: v.city ?? null,
-    country: v.country ?? null,
-    category: v.category ?? null,
+    ...backendMeta(v),
   };
 }
 
