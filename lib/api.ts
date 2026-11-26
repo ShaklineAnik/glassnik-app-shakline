@@ -161,8 +161,17 @@ export const userApi = {
     }),
 
   /** Users the signed-in user has blocked (for the Blocked users screen). */
-  getBlockedUsers: () =>
-    request<BlockedUser[]>('/users/me/blocks'),
+  getBlockedUsers: async (): Promise<BlockedUser[]> => {
+    // Real backend: GET /users/me/blocked-users returns
+    // [{ blockedId, createdAt, blocked: { id, username, displayName, avatarUrl } }]
+    const rows = await request<any[]>('/users/me/blocked-users');
+    return (rows ?? []).map((r) => ({
+      id: r.blocked?.id ?? r.blockedId ?? r.id,
+      username: r.blocked?.username ?? r.username ?? null,
+      displayName: r.blocked?.displayName ?? r.displayName ?? null,
+      avatarUrl: r.blocked?.avatarUrl ?? r.avatarUrl ?? null,
+    }));
+  },
 
   deleteMyAccount: () =>
     request<{ success: boolean }>('/users/me', {
