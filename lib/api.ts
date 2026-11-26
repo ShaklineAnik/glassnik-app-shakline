@@ -180,6 +180,20 @@ export const userApi = {
 };
 
 // ─── Videos ───────────────────────────────────────────────────────────────────
+// Backend ReportReason codes: SPAM, NUDITY, VIOLENCE, HATE, HARASSMENT, COPYRIGHT, SELF_HARM, OTHER.
+// The app shows friendly labels, so map them to the backend codes.
+function toReportReason(label: string): string {
+  const codes = ['SPAM', 'NUDITY', 'VIOLENCE', 'HATE', 'HARASSMENT', 'COPYRIGHT', 'SELF_HARM', 'OTHER'];
+  if (codes.includes(label)) return label;
+  const l = label.toLowerCase();
+  if (l.startsWith('spam')) return 'SPAM';
+  if (l.startsWith('nudity')) return 'NUDITY';
+  if (l.startsWith('violence')) return 'VIOLENCE';
+  if (l.startsWith('hate')) return 'HATE';
+  if (l.startsWith('harass')) return 'HARASSMENT';
+  return 'OTHER';
+}
+
 export const videoApi = {
   /** Fetch a single video by ID. */
   getVideo: (id: number) =>
@@ -210,10 +224,15 @@ export const videoApi = {
     request<{ liked: boolean; likeCount: number }>(`/videos/${videoId}/like`, {
       method: 'DELETE',
     }),
+  /** Real backend: POST /moderation/reports { videoId, reason (code), details }. The label is kept in details. */
   reportVideo: (videoId: string | number, reason: string, details?: string) =>
-    request<{ success: boolean }>(`/videos/${videoId}/report`, {
+    request<unknown>('/moderation/reports', {
       method: 'POST',
-      body: JSON.stringify({ reason, details }),
+      body: JSON.stringify({
+        videoId: Number(videoId),
+        reason: toReportReason(reason),
+        details: (details ?? reason).slice(0, 500),
+      }),
     }),
 };
 
