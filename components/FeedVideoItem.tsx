@@ -326,7 +326,7 @@ export function FeedVideoItem({ video, isActive, onCommentPress }: Props) {
         <View style={styles.bottomBox}>
           {!isOwnVideo && (
             <View style={styles.creatorRow}>
-              <Text style={styles.creatorName}>@{video.creator.username}</Text>
+              <Pressable disabled={video.creatorId == null || video.id.startsWith('sv-')} onPress={() => router.push(`/user/${video.creatorId}` as any)} hitSlop={8}><Text style={styles.creatorName}>@{video.creator.username}</Text></Pressable>
               {video.creatorId && (
                 <Pressable
                   style={[styles.followTextBtn, following && styles.followTextBtnActive]}

@@ -175,12 +175,12 @@ export default function FeedScreen() {
 
       {/* ── Top overlay: For You | Following + icons ── */}
       <View style={[styles.topBar, { paddingTop: topInset + (Platform.OS === 'web' ? 8 : 12), pointerEvents: 'box-none' }]}>
-        <View style={[styles.topLeft, { pointerEvents: 'none' }]}>
+        <View style={[styles.topLeft, { pointerEvents: 'box-none' }]}>
           {allVideos[currentIndex]?.creator?.username &&
            allVideos[currentIndex]?.creatorId !== user?.id ? (
-            <Text style={styles.creatorHandle}>
+            <Pressable disabled={allVideos[currentIndex]?.creatorId == null || allVideos[currentIndex]?.id?.startsWith('sv-')} onPress={() => router.push(`/user/${allVideos[currentIndex]?.creatorId}` as any)} hitSlop={8}><Text style={styles.creatorHandle}>
               @{allVideos[currentIndex].creator.username}
-            </Text>
+            </Text></Pressable>
           ) : null}
         </View>
 
