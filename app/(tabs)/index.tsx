@@ -184,6 +184,33 @@ export default function FeedScreen() {
           ) : null}
         </View>
 
+        {/* Right icons: Explore, Profile (→ Settings → Delete Account), Mute */}
+        <View style={styles.topRight}>
+          <Pressable
+            onPress={() => router.push('/(tabs)/explore' as any)}
+            hitSlop={8}
+            accessibilityLabel="Explore"
+          >
+            <Feather name="compass" size={22} color="#fff" />
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/(tabs)/notifications' as any)}
+            hitSlop={8}
+            accessibilityLabel="Notifications"
+          >
+            <Feather name="bell" size={22} color="#fff" />
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/(tabs)/profile' as any)}
+            hitSlop={8}
+            accessibilityLabel="Profile"
+          >
+            <Feather name="user" size={22} color="#fff" />
+          </Pressable>
+          <Pressable onPress={toggleMute} hitSlop={8} accessibilityLabel="Mute">
+            <Feather name={isMuted ? 'volume-x' : 'volume-2'} size={22} color="#fff" />
+          </Pressable>
+        </View>
         {/* Tab switcher */}
         <View style={styles.tabSwitcher}>
           <Pressable onPress={() => setActiveTab('foryou')}>
@@ -200,26 +227,6 @@ export default function FeedScreen() {
           </Pressable>
         </View>
 
-        {/* Right icons: Explore, Profile (→ Settings → Delete Account), Mute */}
-        <View style={styles.topRight}>
-          <Pressable
-            onPress={() => router.push('/(tabs)/explore' as any)}
-            hitSlop={8}
-            accessibilityLabel="Explore"
-          >
-            <Feather name="compass" size={22} color="#fff" />
-          </Pressable>
-          <Pressable
-            onPress={() => router.push('/(tabs)/profile' as any)}
-            hitSlop={8}
-            accessibilityLabel="Profile"
-          >
-            <Feather name="user" size={22} color="#fff" />
-          </Pressable>
-          <Pressable onPress={toggleMute} hitSlop={8} accessibilityLabel="Mute">
-            <Feather name={isMuted ? 'volume-x' : 'volume-2'} size={22} color="#fff" />
-          </Pressable>
-        </View>
       </View>
 
       <MusicController video={allVideos[currentIndex] ?? null} />
@@ -250,10 +257,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingBottom: 12,
-    zIndex: 10,
+    zIndex: 10, flexWrap: 'wrap',
   },
   topLeft: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'flex-start',
   },
   creatorHandle: {
@@ -267,7 +274,7 @@ const styles = StyleSheet.create({
   tabSwitcher: {
     flexDirection: 'row',
     gap: 20,
-    alignItems: 'center',
+    alignItems: 'center', width: '100%', justifyContent: 'center', marginTop: 10,
   },
   tabText: {
     color: 'rgba(255,255,255,0.6)',
@@ -292,7 +299,7 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   topRight: {
-    flex: 1,
+    flexGrow: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
