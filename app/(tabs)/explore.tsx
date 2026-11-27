@@ -124,7 +124,7 @@ export default function ExploreScreen() {
       const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return tb - ta;
     });
-    return [...sortedApi, ...SAMPLE_VIDEOS];
+    return [...sortedApi, ...(__DEV__ ? SAMPLE_VIDEOS : [])];
   }, [apiVideos]);
 
   const trendingDestinations = useMemo(() => {
@@ -157,7 +157,7 @@ export default function ExploreScreen() {
         v.description.toLowerCase().includes(q) ||
         v.creator.username.toLowerCase().includes(q) ||
         v.hashtags.some((h) => h.includes(q)) ||
-        v.city?.toLowerCase().includes(q) ||
+        [v.city, v.country].filter(Boolean).join(', ').toLowerCase().includes(q) || v.place?.toLowerCase().includes(q) || v.city?.toLowerCase().includes(q) ||
         v.country?.toLowerCase().includes(q)
     );
   }, [allVideos, query, activeCategory]);

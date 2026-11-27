@@ -120,7 +120,7 @@ export default function FeedScreen() {
     ...(apiVideos ?? [])
       .filter((v) => !!v.publicUrl)
       .map(apiVideoToSample),
-    ...SAMPLE_VIDEOS,
+    ...(__DEV__ ? SAMPLE_VIDEOS : []),
   ];
 
   const onViewableItemsChanged = useRef(
