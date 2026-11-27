@@ -15,7 +15,7 @@ import {
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Feather } from '@expo/vector-icons';
 import { mobileApi } from '@/lib/api';
@@ -62,6 +62,17 @@ const CATEGORIES = [
 const DISCOVERY_TABS = ['Explore', 'Trending', 'Nearby', 'Global'] as const;
 type DiscoveryTab = typeof DISCOVERY_TABS[number];
 
+function exploreMeta(v: VideoAsset) {
+  const raw = v as any;
+  const placeObj = raw.place && typeof raw.place === 'object' ? raw.place : null;
+  const parts: string[] = typeof raw.locationName === 'string' ? raw.locationName.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
+  return {
+    place: placeObj?.name ?? (typeof v.place === 'string' ? v.place : undefined),
+    city: placeObj?.city ?? v.city ?? parts[0] ?? undefined,
+    country: placeObj?.country ?? v.country ?? (parts.length > 1 ? parts[parts.length - 1] : undefined),
+    category: v.category ?? raw.categories?.[0]?.name ?? undefined,
+  };
+}
 function apiVideoToSample(v: VideoAsset): SampleVideo {
   const colors = ['#FF6B9D', '#FF4500', '#7C3AED', '#0EA5E9', '#F59E0B', '#10B981', '#EF4444', '#6366F1'];
   const name = v.owner?.displayName ?? 'Unknown';
@@ -70,15 +81,12 @@ function apiVideoToSample(v: VideoAsset): SampleVideo {
     uri: v.publicUrl ?? '',
     thumbnailUrl: v.thumbnailUrl ?? undefined,
     creatorId: v.owner?.id,
-    creator: { name, username: name.toLowerCase().replace(/\s+/g, ''), initial: name.charAt(0).toUpperCase(), color: colors[v.id % colors.length] ?? '#7C3AED', avatarUrl: v.owner?.avatarUrl ?? undefined },
+    creator: { name, username: v.owner?.username ?? name.toLowerCase().replace(/\s+/g, ''), initial: name.charAt(0).toUpperCase(), color: colors[v.id % colors.length] ?? '#7C3AED', avatarUrl: v.owner?.avatarUrl ?? undefined },
     description: v.description ?? v.title ?? '',
     hashtags: ['glassnik', 'pov'],
     music: 'Original Sound',
-    likes: 0, comments: 0, shares: 0,
-    place: v.place ?? undefined,
-    city: v.city ?? undefined,
-    country: v.country ?? undefined,
-    category: v.category ?? undefined,
+    likes: 0, comments: (v as any).commentCount ?? 0, shares: 0,
+    ...exploreMeta(v),
     createdAt: v.createdAt,
   };
 }
@@ -678,7 +686,7 @@ export function VideoGridCell({
 
   return (
     <View style={{ width, marginBottom: 14 }}>
-      <Pressable
+      <Pressable disabled={video.id.startsWith('sv-')} onPress={() => router.push(`/video/${video.id}` as any)}
         style={({ pressed }) => [
           styles.cell,
           { width, height, opacity: pressed ? 0.9 : 1 },
