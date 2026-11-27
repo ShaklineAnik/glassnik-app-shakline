@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   ActivityIndicator,
+  Dimensions,
   FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -55,6 +57,23 @@ export function CommentsSheet({ videoId, onClose }: Props) {
   const [text, setText] = useState('');
   const inputRef = useRef<TextInput>(null);
 
+  // Android: the Modal does not resize for the keyboard, so lift the sheet by the keyboard height
+  // and keep the input above the system navigation buttons.
+  const [kbHeight, setKbHeight] = useState(0);
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const show = Keyboard.addListener('keyboardDidShow', (e) => setKbHeight(Math.max(0, Dimensions.get('screen').height - e.endCoordinates.screenY)));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKbHeight(0));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+  const bottomPad =
+    Platform.OS === 'android'
+      ? (kbHeight > 0 ? 8 : Math.max(insets.bottom, 48) + 8)
+      : insets.bottom + 8;
+
   const { data: rawData, isLoading } = useQuery({
     queryKey: ['comments', videoId],
     queryFn: () => videoApi.getComments(videoId!),
@@ -70,6 +89,7 @@ export function CommentsSheet({ videoId, onClose }: Props) {
   const postMutation = useMutation({
     mutationFn: (t: string) => videoApi.postComment(videoId!, t),
     onSuccess: (newComment: any) => {
+      queryClient.invalidateQueries({ queryKey: ['feed'] });
       queryClient.setQueryData(['comments', videoId], (old: any) => {
         const prev: Comment[] = Array.isArray(old) ? old : (old?.comments ?? old?.data ?? []);
         return [newComment, ...prev];
@@ -107,10 +127,10 @@ export function CommentsSheet({ videoId, onClose }: Props) {
       <Pressable style={styles.backdrop} onPress={onClose} />
       <KeyboardAvoidingView
         style={styles.kvWrap}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
         keyboardVerticalOffset={0}
       >
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + 8 }]}>
+        <View style={[styles.sheet, { paddingBottom: bottomPad }]}>
           {/* Handle + header */}
           <View style={styles.headerRow}>
             <View style={styles.handle} />

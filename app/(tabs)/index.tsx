@@ -65,7 +65,7 @@ function apiVideoToSample(v: VideoAsset): SampleVideo {
     hashtags: [],
     music: '',
     likes: v.likes ?? 0,
-    comments: 0,
+    comments: (v as any).commentCount ?? 0,
     shares: 0,
     ...backendMeta(v),
   };
