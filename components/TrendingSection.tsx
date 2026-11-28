@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { SampleVideo } from '@/constants/sampleVideos';
 import { DestinationCard } from './DestinationCard';
+import { useQuery } from '@tanstack/react-query';
+import { mobileApi } from '@/lib/api';
 
 interface Props {
   videos: SampleVideo[];
@@ -20,6 +22,8 @@ export function TrendingSection({
   renderVideoCard,
   onDestinationPress,
 }: Props) {
+  const { data: stats } = useQuery({ queryKey: ['community-stats'], queryFn: mobileApi.getCommunityStats });
+  const statNum = (v?: number | null) => (v == null ? '\u2014' : v.toLocaleString());
   // Top Picks Right Now — sorted by likes. NOTE: there is no real view-count
   // field on the video data yet, so likes is used as the best available
   // proxy for "trending" until Tenzin wires up real view-count analytics.
@@ -108,25 +112,22 @@ export function TrendingSection({
         <Text style={styles.sectionTitle}>Glassnik Community</Text>
         <View style={styles.communityRow}>
           <View style={styles.communityCard}>
-            <Text style={styles.communityNum}>—</Text>
+            <Text style={styles.communityNum}>{statNum(stats?.videographers)}</Text>
             <Text style={styles.communityLabel}>Videographers</Text>
           </View>
           <View style={styles.communityCard}>
-            <Text style={styles.communityNum}>—</Text>
+            <Text style={styles.communityNum}>{statNum(stats?.experiences)}</Text>
             <Text style={styles.communityLabel}>Experiences</Text>
           </View>
           <View style={styles.communityCard}>
-            <Text style={styles.communityNum}>—</Text>
+            <Text style={styles.communityNum}>{statNum(stats?.countries)}</Text>
             <Text style={styles.communityLabel}>Countries</Text>
           </View>
           <View style={styles.communityCard}>
-            <Text style={styles.communityNum}>—</Text>
+            <Text style={styles.communityNum}>{statNum(stats?.totalViews)}</Text>
             <Text style={styles.communityLabel}>Total Views</Text>
           </View>
         </View>
-        <Text style={styles.placeholderNote}>
-          Live community stats coming soon.
-        </Text>
       </View>
 
       {/* Most Watched */}

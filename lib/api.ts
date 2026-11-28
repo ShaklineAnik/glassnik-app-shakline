@@ -84,6 +84,8 @@ export const authApi = {
 
 // ─── Mobile feed & upload ──────────────────────────────────────────────────────
 export const mobileApi = {
+  getCommunityStats: () =>
+    request<{ experiences: number; videographers: number; countries: number; totalViews: number | null }>('/mobile/community-stats'),
   getFeed: (page = 1, limit = 20) =>
     request<any[]>(`/mobile/feed?page=${page}&limit=${limit}`),
 
