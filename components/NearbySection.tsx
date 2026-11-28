@@ -51,13 +51,9 @@ export function NearbySection({ videos, isMobile, contentWidth, onDestinationPre
         <Text style={styles.title}>Popular Nearby Destinations</Text>
       </View>
       <Text style={styles.subtitle}>
-        Discover Eye-POV experiences near you.{'\n'}Use your current location or choose a nearby destination.
+        Discover Eye-POV experiences near you.{'\n'}Choose a nearby destination.
       </Text>
 
-      <Pressable style={styles.locationBtn} onPress={handleUseMyLocation}>
-        <Feather name="navigation" size={14} color="#5eead4" />
-        <Text style={styles.locationBtnText}>Use my location</Text>
-      </Pressable>
 
       {destinations.length > 0 ? (
         <View style={[styles.grid, { paddingHorizontal: PADDING, gap: GAP }]}>
