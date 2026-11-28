@@ -180,7 +180,7 @@ export default function NotificationsScreen() {
         <View style={styles.center}>
           <Feather name="bell" size={44} color="rgba(255,255,255,0.15)" />
           <Text style={styles.emptyText}>All caught up!</Text>
-          <Text style={styles.emptySub}>Notifications for likes, comments, and new followers show up here.</Text>
+          <Text style={styles.emptySub}>Notifications for likes and comments show up here.</Text>
         </View>
       ) : (
         <FlatList

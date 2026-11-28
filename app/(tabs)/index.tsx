@@ -219,12 +219,6 @@ export default function FeedScreen() {
             </Text>
             {activeTab === 'foryou' && <View style={styles.tabUnderline} />}
           </Pressable>
-          <Pressable onPress={() => setActiveTab('following')}>
-            <Text style={[styles.tabText, activeTab === 'following' && styles.tabTextActive]}>
-              Following
-            </Text>
-            {activeTab === 'following' && <View style={styles.tabUnderline} />}
-          </Pressable>
         </View>
 
       </View>

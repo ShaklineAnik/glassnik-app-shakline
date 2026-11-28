@@ -320,16 +320,6 @@ const videos = allVideos.filter((v) => {
                 {/* Stats */}
                 <View style={styles.statsRow}>
                   <View style={styles.statItem}>
-                    <Text style={styles.statNum}>{stats.following}</Text>
-                    <Text style={styles.statLabel}>Following</Text>
-                  </View>
-                  <View style={styles.statDivider} />
-                  <View style={styles.statItem}>
-                    <Text style={styles.statNum}>{stats.followers}</Text>
-                    <Text style={styles.statLabel}>Followers</Text>
-                  </View>
-                  <View style={styles.statDivider} />
-                  <View style={styles.statItem}>
                     <Text style={styles.statNum}>{stats.likes}</Text>
                     <Text style={styles.statLabel}>Total Views</Text>
                   </View>

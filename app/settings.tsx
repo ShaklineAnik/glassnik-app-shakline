@@ -71,7 +71,7 @@ export default function SettingsScreen() {
     if (deleting) return;
     Alert.alert(
       'Delete account',
-      'This will permanently delete your account, including your Experiences, likes, comments, and followers. This cannot be undone.',
+      'This will permanently delete your account, including your Experiences, likes and comments. This cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
         {

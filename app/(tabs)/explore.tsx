@@ -723,7 +723,6 @@ export function VideoGridCell({
               <Text style={styles.cellUsername} numberOfLines={1}>@{video.creator.username}</Text>
               <View style={styles.cellMiniTabs}>
                 <Text style={styles.cellMiniTabActive}>For You</Text>
-                <Text style={styles.cellMiniTab}>Following</Text>
               </View>
             </View>
             {video.category ? (

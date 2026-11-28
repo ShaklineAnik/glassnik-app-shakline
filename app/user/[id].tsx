@@ -206,47 +206,11 @@ export default function UserProfileScreen() {
             {/* ── Stats row ── */}
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
-                <Text style={styles.statNum}>{stats.following}</Text>
-                <Text style={styles.statLabel}>Following</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNum}>{stats.followers}</Text>
-                <Text style={styles.statLabel}>Followers</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
                 <Text style={styles.statNum}>{stats.likes}</Text>
-                <Text style={styles.statLabel}>Likes</Text>
+                <Text style={styles.statLabel}>Total Views</Text>
               </View>
             </View>
 
-            {/* Action button */}
-            {!isOwnProfile && (
-              <View style={styles.actionRow}>
-                <Pressable
-                  style={[
-                    styles.followBtn,
-                    displayIsFollowing ? styles.followingBtn : styles.notFollowingBtn,
-                  ]}
-                  onPress={handleFollowPress}
-                  disabled={followMutation.isPending}
-                >
-                  {followMutation.isPending ? (
-                    <ActivityIndicator size="small" color={displayIsFollowing ? '#fff' : '#000'} />
-                  ) : (
-                    <Text
-                      style={[
-                        styles.followBtnText,
-                        displayIsFollowing ? styles.followingBtnText : styles.notFollowingBtnText,
-                      ]}
-                    >
-                      {displayIsFollowing ? 'Following' : 'Follow'}
-                    </Text>
-                  )}
-                </Pressable>
-              </View>
-            )}
           </View>
         </View>
 
